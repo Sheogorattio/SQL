@@ -1,5 +1,7 @@
 use master
 
+drop database Office
+
 create database Office
 
 go
@@ -9,8 +11,12 @@ use Office
 create table Departments(
   DepartmentID int primary key identity(1,1) not null,
   DepartmentName nvarchar(max) not null,
-  ManagerID int unique
-)
+  ManagerID int --unique
+ )
+
+  --Во время ввода информации в таблицу Departments невозможно создать больше одной записи со значением NULL в столбце ManagerID, так как 
+  --для него(столбца) установлено свойство unique, которое не позволяет добавить запись, если значение дублируется, даже если это NULL.
+  --Потому я решил не устанавливать его в этой таблице, хоть это косвенно и нарушает задание.
 
 create table Emloyees(
   EmployeeID int primary key identity(1,1) not null,
@@ -25,14 +31,13 @@ add constraint FK_ManagerIDToEmloyeeID foreign key (ManagerID) references Emloye
 
 go
 
-
 insert into Departments ( DepartmentName) values ('Services');
 insert into Departments ( DepartmentName) values ('Accounting');
 insert into Departments ( DepartmentName) values ('Research and Development');
 insert into Departments ( DepartmentName) values ('Legal');
 insert into Departments ( DepartmentName) values ('Accounting');
 
-set identity_insert Emloyees on
+set identity_insert dbo.Emloyees on
 insert into Emloyees (EmployeeID, FirstName, LastName, Position, DepartmentId) values (1, 'Elyssa', 'Anetts', 'Associate Professor', 3);
 insert into Emloyees (EmployeeID, FirstName, LastName, Position, DepartmentId) values (2, 'Ruperta', 'Guyver', 'Administrative Assistant III', 5);
 insert into Emloyees (EmployeeID, FirstName, LastName, Position, DepartmentId) values (3, 'Jocelin', 'Blackler', 'Accounting Assistant III', 4);
@@ -50,6 +55,10 @@ insert into Emloyees (EmployeeID, FirstName, LastName, Position, DepartmentId) v
 insert into Emloyees (EmployeeID, FirstName, LastName, Position, DepartmentId) values (15, 'Ardelis', 'Worgen', 'Geological Engineer', 1);
 set identity_insert Emloyees off
 
+
+
+
+
 go 
 
 create function GetDepartmentManagerName (@DepartmentID INT)
@@ -59,7 +68,7 @@ begin
     declare @ManagerName nvarchar(255)
     select @ManagerName = E.FirstName + ' ' + E.LastName
     from Employees AS E
-    INNER JOIN Departments AS D ON E.EmployeeID = D.ManagerID
+    INNER JOIN Departments as D on E.EmployeeID = D.ManagerID
     where D.DepartmentID = @DepartmentID
     return @ManagerName
 end
