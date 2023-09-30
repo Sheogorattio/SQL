@@ -1,6 +1,6 @@
 use master
 
-drop database Office
+--drop database Office
 
 create database Office
 
