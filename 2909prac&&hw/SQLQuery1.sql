@@ -15,7 +15,7 @@
 
 --create table Accounts(
 --	ID int identity(1,1) primary key not null,
---	Number varchar(20) not null,
+--	Number varchar(20) unique not null,
 --	ClientID int unique not null foreign key (ClientID) references Clients(ID),
 --	Balance decimal(10,2) not null
 --)
@@ -35,16 +35,34 @@
 --)
 
 go
-drop procedure dbo.addClient
-
-go
 
 create procedure addClient @Name nvarchar(max), @Address text, @PhoneNumber varchar(20)
 as
 begin
 insert into Clients(Name, Address, PhoneNumber) values (@Name, @Address, @PhoneNumber)
-select SCOPE_IDENTITY()
+return SCOPE_IDENTITY()
 end
 
 go
-addClient 'Mykhailo', 'Frunze 3', '0668765432'
+declare @_ int =0
+exec @_ = addClient 'Valeriy', 'Yadova 2', '0638775633'
+select @_
+
+go
+create procedure addAccount @ClientID int
+as
+begin
+insert into Accounts(Number,ClientID, Balance) values (rand()*(9999999999-1000000000)+1000000000, @ClientID, 0)
+return select Number from Accounts where ID = SCOPE_IDENTITY()
+end
+
+go
+
+exec addAccount 1
+
+go
+create procedure transferMoney @senderNum int, @receiverNum int , @amount money
+as
+begin
+
+end
