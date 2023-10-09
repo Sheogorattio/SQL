@@ -64,8 +64,8 @@ go
 exec addAccount 1
 
 
-go
-drop procedure transferMoney
+--go
+--drop procedure transferMoney
 go
 create procedure transferMoney @senderNum varchar(20), @receiverNum varchar(20), @amount money
 as
@@ -103,3 +103,33 @@ end
 
 go
 exec getTransactionList '23456'	
+
+go 
+
+create procedure getBalance @UserID int 
+as
+begin
+return select sum(Balance) from Accounts where ClientID = @UserID
+end
+
+go
+create procedure loadFunds @Amount money, @AccountNumber varchar(20)
+as
+begin
+update Accounts
+set Balance += @Amount
+where Number = @AccountNumber
+end
+
+go
+create procedure cancelAccountTransferMoney @CanceledAccount varchar(20), @ReveiverAccount varchar(20)
+as
+begin
+update Accounts
+set Balance = (select Balance from Accounts where Number = @CanceledAccount)
+where Number = @ReveiverAccount
+
+update Accounts
+set Balance =0
+where Number = @CanceledAccount
+end
