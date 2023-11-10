@@ -58,3 +58,33 @@ end
 
 close AverageGradeCursor;
 deallocate AverageGradeCursor;
+
+go
+declare @i int = 1;
+declare @GradeID int;
+declare @EnrollmentID int;
+declare @NewGrade int;
+
+declare UpdateGradeCursor cursor for
+select GradeID, EnrollmentID, Grade
+from Grades
+order by GradeID;
+
+open UpdateGradeCursor;
+
+fetch next from UpdateGradeCursor into @GradeID, @EnrollmentID, @NewGrade;
+
+while @@FETCH_STATUS = 0 and @i <= 5
+begin
+    set @NewGrade = @NewGrade + 1;
+	set @i += 1;
+
+    update Grades
+    set Grade = @NewGrade
+    where GradeID = @GradeID;
+
+    fetch next from UpdateGradeCursor into @GradeID, @EnrollmentID, @NewGrade;
+end
+
+close UpdateGradeCursor;
+deallocate UpdateGradeCursor;
