@@ -37,7 +37,7 @@ declare @FirstName nvarchar(50);
 declare @LastName nvarchar(50);
 declare @AverageGrade float;
 
-declare AverageGradeCursor cursor for
+declare AverageGradeCursor scroll cursor for
 select s.StudentID, s.FirstName, s.LastName, avg(g.Grade) as AverageGrade
 from Students s
 inner join Enrollments e on s.StudentID = e.StudentID
